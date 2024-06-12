@@ -1,11 +1,22 @@
-import Login from './components/Login.tsx';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import PrivateRoute from './components/PrivateRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
-function App() {
+const App = () => {
+
   return (
-    <div className="App">
-      <Login />
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;

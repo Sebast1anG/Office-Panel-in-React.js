@@ -1,9 +1,7 @@
-import React from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import { Paper, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const validationSchema = yup.object({
   email: yup
@@ -12,59 +10,71 @@ const validationSchema = yup.object({
     .required('Email is required'),
   password: yup
     .string()
-    .min(8, 'Password should be of minimum 8 characters length')
+    .oneOf(['Password123!'], 'Password must be match from github instructions')
     .required('Password is required'),
 });
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const formik = useFormik({
     initialValues: {
-      email: 'foobar@example.com',
-      password: 'foobar',
+      email: 'admin@officeboard.com',
+      password: 'Password123!',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      login();
+      navigate('/dashboard', { state: { email: values.email } });
     },
   });
 
   return (
-    <div>
-      <Paper square={false} elevation={3} style={{ padding: '16px', maxWidth: '400px', margin: '0 auto' }}>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <form onSubmit={formik.handleSubmit}>
-          <Box mb={2}>
-            <TextField
-              fullWidth
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
               id="email"
               name="email"
-              label="Email"
+              type="email"
+              className={`mt-1 block w-full px-3 py-2 border ${formik.touched.email && formik.errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
             />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              fullWidth
+            {formik.touched.email && formik.errors.email ? (
+              <p className="mt-2 text-sm text-red-600">{formik.errors.email}</p>
+            ) : null}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <input
               id="password"
               name="password"
-              label="Password"
               type="password"
+              className={`mt-1 block w-full px-3 py-2 border ${formik.touched.password && formik.errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
               value={formik.values.password}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
             />
-          </Box>
-        <Button color="primary" variant="contained" type="submit">
-          Login
-        </Button>
-      </form>
-    </Paper>
-  </div>
+            {formik.touched.password && formik.errors.password ? (
+              <p className="mt-2 text-sm text-red-600">{formik.errors.password}</p>
+            ) : null}
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
