@@ -4,6 +4,7 @@
       "module": "commonjs",
       "jsx": "react-jsx",
       "strict": true,
+      "resolveJsonModule": true,
       "moduleResolution": "node",
       "esModuleInterop": true,
       "skipLibCheck": true,

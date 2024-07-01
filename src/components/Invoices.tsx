@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import EditInvoice from './EditInvoice';
 import CreateInvoice from './CreateInvoice';
-import { mockInvoices } from './mockData';
+import mockData from './mockData.json';
+import React from 'react';
 
 interface Invoice {
     id: number;
@@ -19,7 +20,7 @@ interface InvoicesProps {
 const Invoices = ({ onInvoiceCountChange }: InvoicesProps) => {
     const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
     const [creatingInvoice, setCreatingInvoice] = useState<boolean>(false);
-    const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
+    const [invoices, setInvoices] = useState<Invoice[]>(mockData.mockInvoices);
 
     const numberOfInvoices = invoices.length;
 

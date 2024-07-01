@@ -1,45 +1,50 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 const SESSION_KEY = 'auth_session';
-const SESSION_DURATION = 300000;
+const SESSION_DURATION = 60000; 
 const WARNING_DURATION = 10000;
 
 const getSession = () => {
   const session = localStorage.getItem(SESSION_KEY);
   if (session) {
-    const { isAuthenticated, expiry } = JSON.parse(session);
+    const { isAuthenticated, role, expiry } = JSON.parse(session);
     if (new Date().getTime() < expiry) {
-      return { isAuthenticated, expiry };
+      return { isAuthenticated, role, expiry };
     }
   }
-  return { isAuthenticated: false, expiry: 0 };
+  return { isAuthenticated: false, role: null, expiry: 0 };
 };
 
-const saveSession = (isAuthenticated) => {
-  const expiry = new Date().getTime() + SESSION_DURATION;
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ isAuthenticated, expiry }));
+const saveSession = (isAuthenticated, role, additionalTime = 0) => {
+  const expiry = new Date().getTime() + SESSION_DURATION + additionalTime;
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ isAuthenticated, role, expiry }));
 };
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(getSession().isAuthenticated);
   const [showWarning, setShowWarning] = useState(false);
+  const [role, setRole] = useState(getSession().role);
 
-  const login = () => {
+  const login = (role) => {
     setIsAuthenticated(true);
-    saveSession(true);
+    setRole(role);
+    saveSession(true, role);
+    setShowWarning(false);
   };
 
   const logout = () => {
     setIsAuthenticated(false);
+    setRole(null);
     localStorage.removeItem(SESSION_KEY);
+    setShowWarning(false); // Reset warning state
     console.log('User has been logged out.');
   };
 
   const extendSession = () => {
-    saveSession(true);
-    setShowWarning(false);
+    saveSession(true, role, 10000); // Extend session by 1 minute
+    setShowWarning(false); // Hide warning
     console.log('Session extended.');
   };
 
@@ -62,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, extendSession, showWarning }}>
+    <AuthContext.Provider value={{ isAuthenticated, role, login, logout, extendSession, showWarning }}>
       {children}
     </AuthContext.Provider>
   );

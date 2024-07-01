@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import React from 'react';
 
 const validationSchema = yup.object({
   email: yup
@@ -10,7 +11,7 @@ const validationSchema = yup.object({
     .required('Email is required'),
   password: yup
     .string()
-    .oneOf(['Password123!'], 'Password must be match from github instructions')
+    .oneOf(['Password123!'], 'Password must match the specified pattern')
     .required('Password is required'),
 });
 
@@ -25,7 +26,8 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      login();
+      const userRole = 'admin';
+      login(userRole);
       navigate('/dashboard', { state: { email: values.email } });
     },
   });
