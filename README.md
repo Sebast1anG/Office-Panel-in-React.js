@@ -1,6 +1,9 @@
 The App is created in React with Tailwind, GraphQL and Cypress
 
 ![login](src/assets/login.jpg)
+![dashboard](src/assets/dashboard.jpg)
+![editInvoice](src/assets/editInvoice.jpg)
+![editInvoice](src/assets/autologoutTimer.jpg)
 
 To run type
 
