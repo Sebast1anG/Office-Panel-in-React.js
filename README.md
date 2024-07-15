@@ -1,5 +1,7 @@
 The App is created in React with Tailwind, GraphQL and Cypress
 
+![login](src/assets/login.jpg)
+
 To run type
 
 ### `npm install`
