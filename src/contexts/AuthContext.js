@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext(null);
 
 const SESSION_KEY = 'auth_session';
-const SESSION_DURATION = 60000; 
+const SESSION_DURATION = 120000; 
 const WARNING_DURATION = 10000;
 
 const getSession = () => {
@@ -17,8 +17,8 @@ const getSession = () => {
   return { isAuthenticated: false, role: null, expiry: 0 };
 };
 
-const saveSession = (isAuthenticated, role, additionalTime = 0) => {
-  const expiry = new Date().getTime() + SESSION_DURATION + additionalTime;
+const saveSession = (isAuthenticated, role) => {
+  const expiry = new Date().getTime() + SESSION_DURATION;
   localStorage.setItem(SESSION_KEY, JSON.stringify({ isAuthenticated, role, expiry }));
 };
 
@@ -38,13 +38,13 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setRole(null);
     localStorage.removeItem(SESSION_KEY);
-    setShowWarning(false); // Reset warning state
+    setShowWarning(false);
     console.log('User has been logged out.');
   };
 
   const extendSession = () => {
-    saveSession(true, role, 10000); // Extend session by 1 minute
-    setShowWarning(false); // Hide warning
+    saveSession(true, role, 10000);
+    setShowWarning(false);
     console.log('Session extended.');
   };
 

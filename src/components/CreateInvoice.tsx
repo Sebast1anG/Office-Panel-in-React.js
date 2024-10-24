@@ -17,9 +17,11 @@ interface Invoice {
 interface Props {
     onSave: (newInvoice: Invoice) => void;
     onCancelCreate: () => void;
+    checkInvoiceExists: (name: string) => boolean;
+
 }
 
-const CreateInvoice = ({ onSave, onCancelCreate }: Props) => {
+const CreateInvoice = ({ onSave, onCancelCreate, checkInvoiceExists }: Props) => {
     const initialInvoiceState = {
         id: Date.now(),
         name: '',
@@ -31,6 +33,7 @@ const CreateInvoice = ({ onSave, onCancelCreate }: Props) => {
 
     const [newInvoice, setNewInvoice] = useState<Invoice>({ ...initialInvoiceState });
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { loading, error, data } = useQuery(GET_COUNTRIES);
 
@@ -73,9 +76,15 @@ const CreateInvoice = ({ onSave, onCancelCreate }: Props) => {
 
     const handleSave = () => {
         setIsSubmitted(true);
-        if (validateForm()) {
-            onSave(newInvoice);
+        setErrorMessage('');
+        if (!validateForm()) return;
+
+        if (checkInvoiceExists(newInvoice.name)) {
+            setErrorMessage('Invoice with this name already exists.');
+            return;
         }
+
+        onSave(newInvoice);
     };
 
     if (loading) return <p>Loading...</p>;
@@ -98,6 +107,9 @@ const CreateInvoice = ({ onSave, onCancelCreate }: Props) => {
                 />
                 {isSubmitted && !newInvoice.name && (
                     <p className="text-red-500 text-sm">Name is required</p>
+                )}
+                {errorMessage && (
+                    <p className="text-red-500 text-sm">{errorMessage}</p>
                 )}
             </div>
             <div className="mb-2">

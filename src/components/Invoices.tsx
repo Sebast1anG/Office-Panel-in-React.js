@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import EditInvoice from './EditInvoice';
 import CreateInvoice from './CreateInvoice';
 import mockData from './mockData.json';
-import React from 'react';
 
 interface Invoice {
     id: number;
@@ -29,6 +28,9 @@ const Invoices = ({ onInvoiceCountChange }: InvoicesProps) => {
             onInvoiceCountChange(numberOfInvoices);
         }
     }, [numberOfInvoices, onInvoiceCountChange]);
+    const checkInvoiceExists = (name: string) => {
+        return invoices.some((invoice) => invoice.name === name);
+    };
 
     const handleEdit = (id: number) => {
         const invoice = invoices.find((invoice) => invoice.id === id);
@@ -118,6 +120,7 @@ const Invoices = ({ onInvoiceCountChange }: InvoicesProps) => {
                 <CreateInvoice
                     onSave={handleCreate}
                     onCancelCreate={handleCancelCreate}
+                    checkInvoiceExists={checkInvoiceExists}
                 />
             )}
             {editingInvoice && (

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface User {
     id: number;
@@ -15,7 +16,14 @@ const mockUsers: User[] = [
 
 const UserManagement = () => {
     const { role } = useAuth();
-    const [users, setUsers] = useState<User[]>(mockUsers);
+    const [users, setUsers] = useState<User[]>(() => {
+        const storedUsers = localStorage.getItem('users');
+        return storedUsers ? JSON.parse(storedUsers) : mockUsers;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('users', JSON.stringify(users));
+    }, [users]);
 
     if (role !== 'admin') {
         return <p>Access denied</p>;
@@ -27,6 +35,12 @@ const UserManagement = () => {
 
     return (
         <div className="p-4">
+            <nav className="mb-4">
+                <span>
+                    <Link to="/dashboard" className="text-blue-500 hover:underline">Home</Link> /
+                    <span className="text-gray-500"> User Management</span>
+                </span>
+            </nav>
             <h1 className="text-2xl font-bold mb-4">User Management</h1>
             <table className="w-full border-collapse border border-gray-200">
                 <thead>
